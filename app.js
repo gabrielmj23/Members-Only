@@ -17,6 +17,11 @@ mongoose.connect(mongoDB, {useUnifiedTopology: true, useNewUrlParser: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongo connection error'));
 
+// Set up express app and view engine
+var app = express();
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 // Set up session middleware
 app.use(session({secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true}));
 
@@ -66,11 +71,6 @@ app.use(function(req, res, next) {
 // Set up routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-// Set up express app and view engine
-var app = express();
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
