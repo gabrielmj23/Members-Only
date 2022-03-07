@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var Message = require('../models/message');
 const { body, validationResult } = require('express-validator');
 
 // For authentication
@@ -8,18 +9,23 @@ var bcrypt = require('bcryptjs');
 var passport = require('passport')
 var LocalStrategy = require("passport-local").Strategy;
 
-// GET index page
-router.get('/', function(req, res, next) {
+// Middleware to check login
+function checkLogin(req, res, next) {
   if (req.user) {
-    res.redirect('/home');
+    next();
   }
   else {
     res.redirect('/log-in');
   }
+}
+
+// GET index page
+router.get('/', checkLogin, function(req, res, next) {
+  res.redirect('/home');
 });
 
 // GET home page
-router.get('/home', function(req, res, next) {
+router.get('/home', checkLogin, function(req, res, next) {
   res.render('home', {title: 'Members Only'});
 });
 
@@ -114,5 +120,43 @@ router.post('/log-out', function(req, res, next) {
   req.logOut();
   res.redirect('/');
 });
+
+// GET to form to create a new message
+router.get('/new-message', checkLogin, function(req, res, next) {
+  res.render('new-message', {title: 'Create a message'});
+});
+
+// POST a new message
+router.post('/new-message', checkLogin, [
+  // Sanitize and validate input
+  body('title', 'Title must not be empty.').trim().isLength({min: 1}).escape(),
+  body('content', 'Content must not be empty.').trim().isLength({min: 1}).escape(),
+
+  // Process request
+  (req, res, next) => {
+    // Extract errors
+    const errors = validationResult(req);
+
+    // Create temporary message
+    var message = new Message({
+      title: req.body.title,
+      content: req.body.content,
+      timestamp: Date.now(),
+      author: req.user.id
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors, render form with error messages
+      res.render('new-message', {title: 'Create a message', message: message, errors: errors.array()});
+    }
+    else {
+      // No errors, save message and redirect to home page
+      message.save(err => {
+        if (err) { return next(err); }
+        res.redirect('/home');
+      });
+    }
+  }
+]);
 
 module.exports = router;

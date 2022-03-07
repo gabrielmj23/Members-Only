@@ -1,0 +1,37 @@
+<%- include('partials/header'); %>
+<%- include('partials/nav'); %>
+<div class="container-fluid vh-100 bg-light">
+    <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col-8 p-5 mt-5 border border-2 rounded bg-dark shadow-lg text-white">
+            <h3 class="text-center mb-3">Write your message</h3>
+            <form method="post" action="">
+                <!-- Get message values if coming from an error -->
+                <% var msg_title = (typeof message === 'undefined') ? '' : message.title; %>
+                <% var msg_content = (typeof message === 'undefined') ? '' : message.content; %>
+
+                <div class="form-group mb-3">
+                    <label for="title">Title: </label>
+                    <input id="title" class="form-control" type="text" placeholder="Message title" name="title" value="<%- msg_title %>" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="content">Content: </label>
+                    <textarea id="content" class="form-control" type="textarea" placeholder="Message content" name="content" autocomplete="off" required><%- msg_content %></textarea>
+                </div>
+                <div class="container-fluid text-center">
+                    <button class="btn btn-primary mb-4" type="submit">Post message</button>
+                </div>
+            </form>
+            <% if (typeof errors !== 'undefined') { %>
+                <ul>
+                    <% errors.forEach(error => { %>
+                        <li class="text-danger"><%- error.msg %></li>
+                    <% }); %>
+                </ul>
+            <% } %>
+            <p class="text-center text-secondary">Remember to stay kind!</p>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+<%- include('partials/footer'); %>
