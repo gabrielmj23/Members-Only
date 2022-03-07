@@ -1,0 +1,55 @@
+<%- include('partials/header'); %>
+<div class="container-fluid bg-dark">
+    <div class="row vh-100 align-items-center">
+        <div class="col-4"></div>
+        <div class="col-4 p-5 border border-2 rounded bg-light">
+            <h3 class="text-center mb-3">Sign Up</h3>
+            <form method="post" action="">
+                <!-- Get user values if coming from an error -->
+                <% var fname = (typeof user === 'undefined') ? '' : user.first_name; %>
+                <% var lname = (typeof user === 'undefined') ? '' : user.last_name; %>
+                <% var bday = (typeof user === 'undefined' || !user.birthday) ? '' : user.birthday_htmlformatted; %>
+                <% var uname = (typeof user === 'undefined') ? '' : user.username; %>
+                <% var pw = (typeof user === 'undefined') ? '' : user.password; %>
+                
+                <div class="form-group mb-3">
+                    <label for="first_name">First Name: </label>
+                    <input id="first_name" class="form-control" type="text" placeholder="First name" name="first_name" value="<%- fname %>" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="last_name">Last Name: </label>
+                    <input id="last_name" class="form-control" type="text" placeholder="Last name" name="last_name" value="<%- lname %>" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="birthday">Birthday (optional): </label>
+                    <input id="birthday" class="form-control" type="date" placeholder="Birthday (optional)" value="<%- bday %>" name="birthday">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="username">Username: </label>
+                    <input id="username" class="form-control" type="text" placeholder="Username" name="username" value="<%- uname %>" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password">Password: </label>
+                    <input id="password" class="form-control" type="password" placeholder="Password" name="password" autocomplete="off" value="<%- pw %>" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password_conf">Confirm your password: </label>
+                    <input id="password_conf" class="form-control" type="password" placeholder="Password confirmation" name="password_conf" autocomplete="off" required>
+                </div>
+                <div class="container-fluid text-center">
+                    <button class="btn btn-primary mb-4" type="submit">Sign up</button>
+                </div>
+            </form>
+            <% if (typeof errors !== 'undefined') { %>
+                <ul>
+                    <% errors.forEach(error => { %>
+                        <li class="text-danger"><%- error.msg %></li>
+                    <% }); %>
+                </ul>
+            <% } %>
+            <p class="text-center">Already have an account? <a href="/log-in">Log in</a></p>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
+<%- include('partials/footer'); %>
