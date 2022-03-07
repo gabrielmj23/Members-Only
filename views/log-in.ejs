@@ -17,6 +17,9 @@
                     <button class="btn btn-primary mb-4" type="submit">Log in</button>
                 </div>
             </form>
+            <% if (messages.error) { %>
+                <p class="text-center text-danger"><%- messages.error %></p>
+            <% } %>
             <p class="text-center">Don't have an account? <a href="/sign-up">Sign up</a></p>
         </div>
         <div class="col-4"></div>

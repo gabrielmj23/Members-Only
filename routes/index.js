@@ -2,7 +2,11 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 const { body, validationResult } = require('express-validator');
+
+// For authentication
 var bcrypt = require('bcryptjs');
+var passport = require('passport')
+var LocalStrategy = require("passport-local").Strategy;
 
 // GET index page
 router.get('/', function(req, res, next) {
@@ -32,8 +36,17 @@ router.post('/sign-up', [
   body('first_name').trim().isLength({min: 1}).withMessage('First name must not be empty.').isAlpha('es-ES').withMessage('First name must contain only letters.').escape(),
   body('last_name').trim().isLength({min: 1}).withMessage('Last name must not be empty.').isAlpha('es-ES').withMessage('Last name must contain only letters.').escape(),
   body('birthday', 'Invalid birthday date.').optional({checkFalsy: true}).isISO8601().toDate(),
-  body('username').trim().isLength({min: 1}).withMessage('Username must not be empty.').isAlphanumeric('en-US', {ignore: '-_'}).withMessage('Username must contain only letters, numbers, underscores or hyphens.').escape(),
-  
+  body('username').trim().isLength({min: 1}).withMessage('Username must not be empty.').isAlphanumeric('en-US', {ignore: '-_'}).withMessage('Username must contain only letters, numbers, underscores or hyphens.').escape().
+    custom(username => {
+      // Check if username is already in use
+      var takenUser = User.findOne({'username': username});
+      if (takenUser != null) {
+        // Add error if in use
+        throw new Error('Username is already in use.');
+      }
+      return true;
+    }),
+
   // Password validation
   body('password').trim().isLength({min: 8}).withMessage('Password must not have at least 8 characters.').custom(password => {
     // Create password regular expression
@@ -63,7 +76,7 @@ router.post('/sign-up', [
       last_name: req.body.last_name,
       birthday: req.body.birthday,
       username: req.body.username,
-      password: req.body.password,
+      password: '',
       membership: false,
       admin: false
     });
@@ -92,6 +105,10 @@ router.post('/sign-up', [
 // GET log in page
 router.get('/log-in', function(req, res, next) {
   res.render('log-in', {title: 'Log in'});
-})
+});
+
+// POST to log in user
+router.post('/log-in', 
+  passport.authenticate('local', {successRedirect: '/home', failureRedirect: '/log-in', failureFlash: true}),);
 
 module.exports = router;

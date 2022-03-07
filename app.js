@@ -3,11 +3,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+
+// For authentication
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
+const flash = require('express-flash');
+
+// Database related
 var mongoose = require('mongoose');
+var User = require('./models/user');
 
 require('dotenv').config();
 
@@ -32,7 +38,7 @@ passport.use(
           if (err) { return cb(err); }
           // User not found
           if (!user) {
-              return cb(null, false, {message: 'Incorrect username'});
+              return cb(null, false, {message: 'Incorrect username or password.'});
           }
           // Check password
           bcrypt.compare(password, user.password, (err, res) => {
@@ -41,7 +47,7 @@ passport.use(
                   return cb(null, user);
               } else {
                   // Incorrect
-                  return cb(null, false, {message: 'Incorrect password'});
+                  return cb(null, false, {message: 'Incorrect username or password.'});
               }
           });
       });
@@ -59,6 +65,7 @@ passport.deserializeUser(function(id, cb) {
 });
 
 app.use(passport.initialize());
+app.use(flash());
 app.use(passport.session());
 app.use(express.urlencoded({extended: false}));
 
