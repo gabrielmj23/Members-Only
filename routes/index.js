@@ -10,13 +10,11 @@ var LocalStrategy = require("passport-local").Strategy;
 
 // GET index page
 router.get('/', function(req, res, next) {
-  if (typeof currentUser !== 'undefined' && currentUser) {
-    // User is logged in, redirect to home page
+  if (req.user) {
     res.redirect('/home');
-  } 
+  }
   else {
-    // Redirect to login page
-    res.redirect('/log-in');  
+    res.redirect('/log-in');
   }
 });
 
@@ -110,5 +108,11 @@ router.get('/log-in', function(req, res, next) {
 // POST to log in user
 router.post('/log-in', 
   passport.authenticate('local', {successRedirect: '/home', failureRedirect: '/log-in', failureFlash: true}),);
+
+// POST to log out user
+router.post('/log-out', function(req, res, next) {
+  req.logOut();
+  res.redirect('/');
+});
 
 module.exports = router;
