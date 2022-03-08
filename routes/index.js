@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var Message = require('../models/message');
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, check } = require('express-validator');
 require('dotenv').config();
 
 // For authentication
@@ -246,5 +246,50 @@ router.post('/membership', checkLogin, [
     }    
   }
 ]);
+
+// GET to admin page
+router.get('/admin', checkLogin, function(req, res, next) {
+  res.render('become-admin', {title: 'Become an admin'});
+});
+
+// POST to admin page
+router.post('/admin', checkLogin, [
+  // Validate password
+  body('admin_pw').trim().isLength({min: 1}).withMessage('Admin password can\'t be empty.'). 
+    custom(admin_pw => {
+      if (admin_pw != process.env.ADMIN_PASS) {
+        throw new Error('Password is incorrect.');
+      }
+      return true;
+    }),
+  
+  // Process request
+  (req, res, next) => {
+    // Extract validation errors
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // Render form with validation errors
+      res.render('become-admin', {title: 'Become an admin', errors: errors.array()});
+    }
+    else {
+      // Create new user for updating
+      var user = new User({
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        username: req.user.username,
+        password: req.user.password,
+        membership: req.user.membership,
+        admin: true,
+        _id: req.user.id
+      });
+      User.findByIdAndUpdate(req.user.id, user, {}, function(err, newUser) {
+        if (err) { return next(err); }
+        // Success, return to home page
+        res.redirect('/home');
+      });
+    }
+  }
+])
 
 module.exports = router;

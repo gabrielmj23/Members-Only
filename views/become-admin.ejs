@@ -4,20 +4,20 @@
     <div class="row vh-100 align-items-center">
         <div class="col-4"></div>
         <div class="col-4 p-5 border border-2 rounded bg-light">
-            <h3 class="text-center mb-3">Become a member</h3>
-            <% if (currentUser.membership) { %>
-                <p>Oh wait, you're already a member! You can see hidden information about messages.</p>
+            <h3 class="text-center mb-3">Become an admin</h3>
+            <% if (currentUser.admin) { %>
+                <p>Oh wait, you're already an admin! You can see hidden information about messages and delete any message.</p>
                 <p class="text-center"><a href="/home">Return to home page</a></p>
             <% } else { %>
-                <p class="text-center mb-3">Becoming a member allows you to see hidden information about messages</p>
-                <p class="text-center mb-3">To become a member, type the <strong>membership password</strong></p>
+                <p class="text-center mb-3">Becoming an admin allows you to see hidden information about messages and delete them</p>
+                <p class="text-center mb-3">To become an admin, type the <strong>admin password</strong></p>
                 <form method="post" action="">
                     <div class="form-group mb-3">
-                        <label for="member_pw">Password: </label>
-                        <input id="member_pw" class="form-control" type="password" placeholder="Membership password" name="member_pw" required>
+                        <label for="admin_pw">Password: </label>
+                        <input id="admin_pw" class="form-control" type="password" placeholder="Admin password" name="admin_pw" required>
                     </div>
                     <div class="container-fluid text-center">
-                        <button class="btn btn-primary mb-4" type="submit">Become member</button>
+                        <button class="btn btn-primary mb-4" type="submit">Become admin</button>
                     </div>
                 </form>
                 <% if (typeof errors !== 'undefined') { %>
