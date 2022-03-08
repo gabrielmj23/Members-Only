@@ -27,10 +27,5 @@ UserSchema.virtual('birthday_htmlformatted').get(function() {
     return DateTime.fromJSDate(this.birthday).toISODate(DateTime.DATE_SHORT);
 });
 
-// Virtual for user's profile
-UserSchema.virtual('url').get(function() {
-    return `/users/${this._id}`;
-});
-
 // Export model
 module.exports = mongoose.model('User', UserSchema);

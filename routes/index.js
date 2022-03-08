@@ -26,7 +26,13 @@ router.get('/', checkLogin, function(req, res, next) {
 
 // GET home page
 router.get('/home', checkLogin, function(req, res, next) {
-  res.render('home', {title: 'Members Only'});
+  // Find all messages to show on home page
+  Message.find({}).sort({timestamp: -1}).populate('author').
+    exec(function(err, results) {
+      if (err) { return next(err); }
+      // Success, render page
+      res.render('home', {title: 'Members Only', posts: results});
+    });
 });
 
 // GET sign up page

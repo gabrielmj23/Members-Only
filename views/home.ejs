@@ -1,4 +1,31 @@
 <%- include('partials/header'); %>
 <%- include('partials/nav'); %>
-
+<div class="container-fluid vh-100 bg-light">
+    <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col-8 p-5">
+            <h2>Welcome, <%- currentUser.full_name %></h2>
+            <p>Check out these messages!</p>
+            <% posts.forEach(message => { %>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><strong><%- message.title %></strong></h5>
+                        <h6 class="card-subtitle mb-2 text-muted">From user: <strong><%- currentUser.membership ? message.author.username : 'Anonymous (become a member to access hidden information)'; %></strong></h6>
+                        <hr>
+                        <p class="card-text"><%- message.content %></p>
+                        <div class="card-footer" style="overflow: hidden;">
+                            <p class="text-muted" style="float: left;">Posted on <%- currentUser.membership ? message.timestamp_formatted : '(date hidden)'; %></p>
+                            <% if (currentUser.admin || currentUser.id.toString() === message.author._id.toString()) { %>
+                                <form method="get" action="/delete/<%= message._id %>" style="float: right;">
+                                    <button class="btn btn-danger" type="submit">Delete message</button>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
 <%- include('partials/footer'); %>
