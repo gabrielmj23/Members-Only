@@ -4,7 +4,12 @@
     <div class="row align-items-center">
         <div class="col-2"></div>
         <div class="col-8 p-5">
-            <h2>Welcome, <%- currentUser.full_name %></h2>
+            <h2>Welcome, <%- currentUser.full_name %> <% if (currentUser.admin) { %>
+                <span class="badge bg-primary">Admin</span>
+                <% } else if (currentUser.membership) { %>
+                    <span class="badge bg-success">Member</span>
+                <% } %>
+            </h2>
             <p>Check out these messages!</p>
             <% posts.forEach(message => { %>
                 <div class="card mb-4">

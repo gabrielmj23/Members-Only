@@ -290,6 +290,6 @@ router.post('/admin', checkLogin, [
       });
     }
   }
-])
+]);
 
 module.exports = router;
