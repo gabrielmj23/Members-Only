@@ -165,4 +165,40 @@ router.post('/new-message', checkLogin, [
   }
 ]);
 
+// GET to delete message page
+router.get('/delete/:id', checkLogin, function(req, res, next) {
+  // Get message from id
+  Message.findById(req.params.id).populate('author').
+    exec(function(err, result) {
+      if (err) { return next(err); }
+
+      // Throw error if message not found
+      if (result == null) {
+        var err = new Error('Message not found.');
+        err.status = 404;
+        return next(err);
+      }
+
+      // Throw error if user doesn't have permissions
+      if (!(req.user.admin || req.user.id.toString() == result.author._id.toString())) {
+        var err = new Error('You\'re not allowed to perform this operation. Only admins and message authors can delete messages.');
+        err.status = 403;
+        return next(err);
+      }
+
+      // Render delete page
+      res.render('delete-message', {title: 'Delete message', message: result});
+    });
+});
+
+// POST to delete message
+router.post('/delete/:id', checkLogin, function(req, res, next) {
+  // Get message from id and remove
+  Message.findByIdAndRemove(req.params.id, function deleteMessage(err) {
+    if (err) { return next(err); }
+    // Success, redirect to home page
+    res.redirect('/home');
+  });
+});
+
 module.exports = router;

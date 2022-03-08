@@ -1,0 +1,26 @@
+<%- include('partials/header'); %>
+<%- include('partials/nav'); %>
+<div class="container-fluid vh-100 bg-light">
+    <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col-8 p-5">
+            <h2 class="text-center">Delete this message</h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><strong><%- message.title %></strong></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">From user: <strong><%- message.author.username %></strong></h6>
+                    <hr>
+                    <p class="card-text"><%- message.content %></p>
+                    <div class="card-footer" style="overflow: hidden;">
+                        <p class="text-muted" style="float: left;">Posted on <%- message.timestamp_formatted %></p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-danger text-center"><strong>Do you want to delete this message?</strong></p>
+            <form class="text-center" method="post" action="">
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+        <div class="col-2"></div>
+    </div>
+</div>
+<%- include('partials/footer'); %>
