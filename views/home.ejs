@@ -9,12 +9,13 @@
             <% posts.forEach(message => { %>
                 <div class="card mb-4">
                     <div class="card-body">
+                        <% var can_see_hidden = currentUser.membership || currentUser.admin || currentUser.id.toString() == message.author._id.toString(); %>
                         <h5 class="card-title"><strong><%- message.title %></strong></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">From user: <strong><%- (currentUser.membership || currentUser.id.toString() == message.author._id.toString()) ? message.author.username : 'Anonymous (become a member to access hidden information)'; %></strong></h6>
+                        <h6 class="card-subtitle mb-2 text-muted">From user: <strong><%- can_see_hidden ? message.author.username : 'Anonymous (become a member to access hidden information)'; %></strong></h6>
                         <hr>
                         <p class="card-text"><%- message.content %></p>
                         <div class="card-footer" style="overflow: hidden;">
-                            <p class="text-muted" style="float: left;">Posted on <%- (currentUser.membership || currentUser.id.toString() == message.author._id.toString()) ? message.timestamp_formatted : '(date hidden)'; %></p>
+                            <p class="text-muted" style="float: left;">Posted on <%- can_see_hidden ? message.timestamp_formatted : '(date hidden)'; %></p>
                             <% if (currentUser.admin || currentUser.id.toString() === message.author._id.toString()) { %>
                                 <form method="get" action="/delete/<%= message._id %>" style="float: right;">
                                     <button class="btn btn-danger" type="submit">Delete message</button>

@@ -3,6 +3,7 @@ var router = express.Router();
 var User = require('../models/user');
 var Message = require('../models/message');
 const { body, validationResult } = require('express-validator');
+require('dotenv').config();
 
 // For authentication
 var bcrypt = require('bcryptjs');
@@ -50,7 +51,7 @@ router.post('/sign-up', [
     custom(username => {
       // Check if username is already in use
       var takenUser = User.findOne({'username': username});
-      if (takenUser != null) {
+      if (takenUser.length > 0) {
         // Add error if in use
         throw new Error('Username is already in use.');
       }
@@ -200,5 +201,50 @@ router.post('/delete/:id', checkLogin, function(req, res, next) {
     res.redirect('/home');
   });
 });
+
+// GET to membership page
+router.get('/membership', checkLogin, function(req, res, next) {
+  res.render('become-member', {title: 'Become a member'});
+});
+
+// POST to become a member
+router.post('/membership', checkLogin, [
+  // Validate password
+  body('member_pw').trim().isLength({min: 1}).withMessage('Membership password can\'t be empty.').
+    custom(member_pw => {
+      if (member_pw != process.env.MEMBER_PASS) {
+        throw new Error('Password is incorrect.');
+      }
+      return true;
+    }),
+  
+  // Process request
+  (req, res, next) => {
+    // Extract errors
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      // Render form with validation errors
+      res.render('become-member', {title: 'Become a member', errors: errors.array()});
+    }
+    else {
+      // Create new user with current user info and new membership status
+      var user = new User({
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        username: req.user.username,
+        password: req.user.password,
+        membership: true,
+        admin: req.user.admin,
+        _id: req.user.id
+      });
+      User.findByIdAndUpdate(req.user.id, user, {}, function(err, newUser) {
+        if (err) { return next(err); }
+        // Success, redirect to home page
+        res.redirect('/home');
+      })
+    }    
+  }
+]);
 
 module.exports = router;
